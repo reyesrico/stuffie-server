@@ -1,29 +1,31 @@
-import { createServer } from 'http';
-import { WebSocketServer } from 'ws';
+const server = require('http').createServer();
+const WebSocket = require('ws');
 
-const server = createServer();
 server.listen(8080);
 console.log('Listening on port 8080');
 
-const socket = new WebSocketServer({ server });
+const socket = new WebSocket.Server({ server:server });
 
-let clients = {};
+socket.on('connection', ws => {
+  ws.send('Welcome!!!');
 
-const getUniqueId = () => {
-  const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-  return s4() + s4() + '-' + s4();
-}
+  ws.on('message', (data, isBinary) => {
 
-socket.on('connection', connection => {
-  let userId = getUniqueId();
-  clients[userId] = connection;
-  console.log(`${new Date()} recieved a new connection`);
-
-  connection.on('message', message => {
+    ws.send('Thanks');
+    const message = isBinary ? data : data.toString();
+    console.log(`Messsage Received: ${message}`);
+    console.log(typeof message);
 
     // Broadcasting message to all connected clients
-    Object.keys(clients).forEach(key => {
-      clients[key].send(message);
+    socket.clients.forEach(client => {
+      if (client !== ws && client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
     });
+  });
+
+  ws.on('close', () => {
+    // console.log(`Client ${userId} has disconnected`);
+    // delete clients.userId;
   });
 });
