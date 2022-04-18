@@ -10,6 +10,7 @@
   "author": "Carlos Reyes-Rico",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.17.3",
     "http": "0.0.1-security",
     "ws": "^7.5.0"
   }
