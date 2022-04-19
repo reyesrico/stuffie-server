@@ -15,16 +15,14 @@ const server = express()
 const socket = new Server({ server });
 
 socket.on('connection', ws => {
-  ws.send('Client connected');
+  ws.send('"Client connected"');
+  console.log(`clients connected ${socket.clients.size}`);
 
-  ws.on('message', (data, isBinary) => {
-
-    ws.send('Thanks');
-    const message = isBinary ? data : data.toString();
+  // Receives and sends strings
+  // Client should parse info
+  ws.on('message', message => {
     console.log(`Messsage Received: ${message}`);
-    console.log(typeof message);
 
-    console.log(`clients connected ${socket.clients.size}`);
     // Broadcasting message to all connected clients
     socket.clients.forEach(client => {
       // if (client !== ws && client.readyState === WebSocket.OPEN) {
